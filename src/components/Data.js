@@ -4,12 +4,14 @@ import "./global.css";
 
 function Data() {
     const [list, setList] = useState();
-    
+
     useEffect(()=> {
         fetchData();
     }, [])
 
-    const url = "https://www.mocky.io/v2/5ba8efb23100007200c2750c"
+    const url = "https://www.mocky.io/v2/5ba8efb23100007200c2750c";
+
+    // fetch data.
     async function fetchData(){
         try{
             const data= await fetch(url).then((response)=> {

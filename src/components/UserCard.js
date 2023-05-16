@@ -10,6 +10,7 @@ const UserCard = ({ user, isActive,searchQuery, onClick, onMouseEnter}) => {
             }
           return text;
       };
+
       const renderHighlightedItems = () => {
           const { items } = user;
           const hasItems = items && items.length > 0;
@@ -23,7 +24,6 @@ const UserCard = ({ user, isActive,searchQuery, onClick, onMouseEnter}) => {
               </ul>
           )
         });
-      
         return highlightedItems.map((item, index) => (
           <ul key={index} ><li key={index} className={item === searchQuery ? 'highlight' : ''}>{item}</li></ul>
         ));
