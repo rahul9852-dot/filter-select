@@ -1,13 +1,15 @@
 import React, { useState,useEffect,useRef} from 'react'
 import UserCard from './UserCard';
 import "./global.css";
+
+
 function SearchBox({users}) {
-
-    console.log(users);
-
         const [searchQuery, setSearchQuery] = useState('');
         const [matchingUsers, setMatchingUsers] = useState([]);
         const [activeIndex, setActiveIndex] = useState(-1);
+        const [isMousePreferred, setIsMousePreferred] = useState(false);
+        const [isKeywordPreferred, setIsKeywordPreferred] = useState(true);
+        const inputRef = useRef(null);
         const cardContainerRef = useRef(null);
       
         useEffect(() => {
@@ -40,58 +42,90 @@ function SearchBox({users}) {
         }, [activeIndex]);
       
         const handleInputChange = (event) => {
-          setSearchQuery(event.target.value);
+          const { value } = event.target;
+          setSearchQuery(value.toLowerCase());
+          setIsKeywordPreferred(true);
         };
       
         const handleCardClick = (index) => {
           setActiveIndex(index);
+          setIsKeywordPreferred(false);
+
         };
       
         const handleCardMouseEnter = (index) => {
-          if (activeIndex === -1) {
             setActiveIndex(index);
-          }
+            setIsMousePreferred(true);
+            setIsKeywordPreferred(false);
         };
       
-        const handleKeyDown = (event) => {
-          const { keyCode } = event;
-          if (keyCode === 38 && activeIndex > 0) {
-            // Up arrow key
-            setActiveIndex(activeIndex - 1);
-          } else if (keyCode === 40 && activeIndex < matchingUsers.length - 1) {
-            // Down arrow key
-            setActiveIndex(activeIndex + 1);
+        const handleCardMouseLeave = () => {
+          if (!isKeywordPreferred) {
+            setIsMousePreferred(false);
           }
         };
 
+        const handleKeyDown = (event) => {
+          // const { keyCode } = event;
+          // if (keyCode === 38 && activeIndex > 0) {
+          //   // Up arrow key
+          //   setActiveIndex(activeIndex - 1);
+          // } else if (keyCode === 40 && activeIndex < matchingUsers.length - 1) {
+          //   // Down arrow key
+          //   setActiveIndex(activeIndex + 1);
+          // }
+          if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveIndex((prevActiveIndex) => (prevActiveIndex !== null ? Math.max(prevActiveIndex - 1, 0) : null));
+            setIsMousePreferred(false);
+            setIsKeywordPreferred(true);
+          } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setActiveIndex((prevActiveIndex) =>
+              prevActiveIndex !== null ? Math.min(prevActiveIndex + 1, matchingUsers.length - 1) : 0
+            );
+            setIsMousePreferred(false);
+            setIsKeywordPreferred(true);
+          }
+        };
+
+        useEffect(() => {
+          inputRef.current.focus();
+        }, []);
+
+        // console.log(isKeywordPreferred, isMousePreferred)
         return(
+        
             <div className='container'>
-            <input 
-                className='search-input' 
-                type="text" 
-                value={searchQuery} 
-                onChange={handleInputChange} 
-                onKeyDown={handleKeyDown} 
-                placeholder='Search users by ID, address, name, pin...'
-            />
-            {searchQuery && (
-                <div className="card-container" ref={cardContainerRef}>
-                {matchingUsers.length === 0 ? (
-                    <div className="user-card empty">No results found</div>
-                ) : (
-                    matchingUsers.map((user, index) => (
-                    <UserCard
-                        key={user.id}
-                        user={user}
-                        isActive={index === activeIndex}
-                        onClick={() => handleCardClick(index)}
-                        onMouseEnter={() => handleCardMouseEnter(index)}
-                        searchQuery={searchQuery}
-                    />
-                    ))
-                )}
-                </div>
+              <input 
+                  className='search-input' 
+                  type="text" 
+                  value={searchQuery} 
+                  onChange={handleInputChange} 
+                  onKeyDown={handleKeyDown} 
+                  placeholder='Search users by ID, address, name, pin...'
+                  ref={inputRef}
+              />
+              {searchQuery && (
+                  <div className="card-container" ref={cardContainerRef}>
+                  {matchingUsers.length === 0 ? (
+                      <div className="user-card empty">No results found</div>
+                  ) : (
+                      matchingUsers.map((user, index) => (
+                      <UserCard
+                          key={index}
+                          user={user}
+                          isActive={isKeywordPreferred ? index === activeIndex : isMousePreferred && index === activeIndex}
+                          onClick={() => handleCardClick(index)}
+                          onMouseLeave={handleCardMouseLeave}
+                          onMouseEnter={() => handleCardMouseEnter(index)}
+                          searchQuery={searchQuery}
+                      />
+                      ))
+                  )}
+                  </div>
             )}
           </div>
-        )}
+        )};
+
 export default SearchBox;

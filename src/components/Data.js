@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SearchBox from './SearchBox';
-
+import "./global.css";
 
 function Data() {
     const [list, setList] = useState();
+    
     useEffect(()=> {
         fetchData();
     }, [])
@@ -22,6 +23,7 @@ function Data() {
 
   return (
     <div>
+        <h1 className='heading'>Filter select</h1>
         {list && (
             <SearchBox users={list}/>
         )}

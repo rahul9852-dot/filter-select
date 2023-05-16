@@ -3,6 +3,19 @@
     flex-direction: column;
     align-items: center;
   }
+
+.heading{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 500;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  line-height: 1.5rem;
+  color: lightseagreen;
+  margin-top: 20px;
+}
   
   .search-input {
     margin-top: 50px;
@@ -69,7 +82,6 @@
     font-size: 14px;
   }
   .highlight {
-    background-color: #c3e6ff;
     color: blue;
   }
   
